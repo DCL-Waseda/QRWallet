@@ -67,6 +67,7 @@ public class QRActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 // Cancel ボタンクリック処理
+                                scanning();
                                 return;
                             }
                         });
