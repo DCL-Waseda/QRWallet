@@ -14,11 +14,11 @@ public class FinishActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_finish);
-        mReturnButton = (Button)findViewById(R.id.return_button);
+        mReturnButton = (Button)findViewById(R.id.return_select_activity);
         mReturnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(FinishActivity.this,MainActivity.class);
+                Intent intent = new Intent(FinishActivity.this,StartActivity.class);
                 startActivity(intent);
                 finish();
             }

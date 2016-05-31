@@ -26,7 +26,7 @@ public class ReminingFragment extends Fragment {
     private String mMoney;
     private String mParam2;
 
-//    private OnFragmentInteractionListener mListener;
+//    private OnMyListFragmentInteractionListener mListener;
     public ReminingFragment() {
         // Required empty public constructor
     }
@@ -69,7 +69,7 @@ public class ReminingFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
+//    public void onReturnButtonPressed(Uri uri) {
 //        if (mListener != null) {
 //            mListener.onFragmentInteraction();
 //        }
@@ -78,11 +78,11 @@ public class ReminingFragment extends Fragment {
 //    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
+//        if (context instanceof OnMyListFragmentInteractionListener) {
+//            mListener = (OnMyListFragmentInteractionListener) context;
 //        } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
+//                    + " must implement OnMyListFragmentInteractionListener");
 //        }
 //    }
 
@@ -102,7 +102,7 @@ public class ReminingFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-//    public interface OnFragmentInteractionListener {
+//    public interface OnMyListFragmentInteractionListener {
 //        // TODO: Update argument type and name
 //        void onFragmentInteraction();
 //    }

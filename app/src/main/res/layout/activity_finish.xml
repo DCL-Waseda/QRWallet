@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:text="Return"
-            android:id="@+id/return_button"
+            android:id="@+id/return_select_activity"
             android:gravity="center|center_vertical|center_horizontal"
             android:layout_weight="1"
             android:layout_gravity="center"

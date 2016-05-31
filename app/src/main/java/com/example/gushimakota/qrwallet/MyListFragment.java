@@ -1,40 +1,48 @@
 package com.example.gushimakota.qrwallet;
 
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnSelectTheActionFragmentInteractionListener} interface
+ * {@link OnMyListFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SelectTheActionFragment#newInstance} factory method to
+ * Use the {@link MyListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SelectTheActionFragment extends Fragment {
+public class MyListFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_LIST_JSONSTRING = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-
-    private Button mBuyingButton;
-    private Button mListButton;
-
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String jsonString;
     private String mParam2;
 
-    private OnSelectTheActionFragmentInteractionListener mListener;
+    private OnMyListFragmentInteractionListener mListener;
 
-    public SelectTheActionFragment() {
+    private Button returnSelect;
+    private ListView historyList;
+    private SharedPreferences prefList;
+    private List<String> strings;
+
+    public MyListFragment() {
         // Required empty public constructor
     }
 
@@ -44,13 +52,13 @@ public class SelectTheActionFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment SelectTheActionFragment.
+     * @return A new instance of fragment MyListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SelectTheActionFragment newInstance(String param1, String param2) {
-        SelectTheActionFragment fragment = new SelectTheActionFragment();
+    public static MyListFragment newInstance(String param1, String param2) {
+        MyListFragment fragment = new MyListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_LIST_JSONSTRING, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -60,7 +68,7 @@ public class SelectTheActionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            jsonString = getArguments().getString(ARG_LIST_JSONSTRING);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -69,41 +77,45 @@ public class SelectTheActionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_select_the_action, container, false);
-        mBuyingButton = (Button)v.findViewById(R.id.buy_button);
-        mListButton = (Button)v.findViewById(R.id.list_button);
-        mBuyingButton.setOnClickListener(new View.OnClickListener() {
+        View v =inflater.inflate(R.layout.fragment_my_list, container, false);
+        returnSelect = (Button)v.findViewById(R.id.return_select_fragment);
+        historyList = (ListView)v.findViewById(R.id.history_list);
+        openJson();
+        setListView();
+        returnSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToQRActivity();
-            }
-        });
-        mListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onListButtonPressed();
+                onReturnButtonPressed();
             }
         });
         return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onListButtonPressed() {
-        if (mListener != null) {
-            mListener.onChangeTheFragmentToList();
-        }
+    private void openJson(){
+        // JSON形式を配列に保存する
+        Gson gson = new Gson();
+        strings = gson.fromJson(jsonString, ArrayList.class);
     }
 
-    private void goToQRActivity(){
-        Intent intent = new Intent(getContext(),com.example.gushimakota.qrwallet.QRActivity.class);
-        startActivity(intent);
+    private void setListView(){
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_expandable_list_item_1, strings);
+
+        historyList.setAdapter(adapter);
+    }
+
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onReturnButtonPressed() {
+        if (mListener != null) {
+            mListener.onChangeTheFragmentToSelect();
+        }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnSelectTheActionFragmentInteractionListener) {
-            mListener = (OnSelectTheActionFragmentInteractionListener) context;
+        if (context instanceof OnMyListFragmentInteractionListener) {
+            mListener = (OnMyListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnMyListFragmentInteractionListener");
@@ -126,8 +138,8 @@ public class SelectTheActionFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnSelectTheActionFragmentInteractionListener {
+    public interface OnMyListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onChangeTheFragmentToList();
+        void onChangeTheFragmentToSelect();
     }
 }
