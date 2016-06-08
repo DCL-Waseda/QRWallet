@@ -24,7 +24,7 @@ public class ItemsMap {
 
     public int checkThePrice(String item){
         for ( String key : map.keySet() ) {
-            if(item == key){
+            if(item.equals(key)){
                 return map.get(key);
             }
         }

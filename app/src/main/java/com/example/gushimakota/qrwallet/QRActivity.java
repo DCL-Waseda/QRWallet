@@ -19,7 +19,9 @@ import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QRActivity extends AppCompatActivity {
 
@@ -27,7 +29,8 @@ public class QRActivity extends AppCompatActivity {
     private FragmentManager manager;
     private SharedPreferences prefMoney;
     private SharedPreferences prefList;
-    private int money;
+    private int reminingMoney;
+    private int productMoney;
     private ItemsMap itemsMap;
 
     @Override
@@ -43,8 +46,8 @@ public class QRActivity extends AppCompatActivity {
 
     private void setReminingFragment(){
         prefMoney = getSharedPreferences("ReminingMoney", Context.MODE_PRIVATE);
-        money = prefMoney.getInt("money",-100);
-        ReminingFragment fragment = ReminingFragment.newInstance(String.valueOf(money),"a");
+        reminingMoney = prefMoney.getInt("ReminingMoney",-100);
+        ReminingFragment fragment = ReminingFragment.newInstance(String.valueOf(reminingMoney),"a");
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.add(R.id.linear_money, fragment);
@@ -53,12 +56,12 @@ public class QRActivity extends AppCompatActivity {
 
     public void debugBtn(View v){
         String debug = "DebugTest";
-        if(itemsMap.checkThePrice(debug) < 0 || itemsMap.checkThePrice(debug) - money > 0){
+        if(itemsMap.checkThePrice(debug) < 0 || itemsMap.checkThePrice(debug) - reminingMoney > 0){
             return;
         }
-        money -= itemsMap.checkThePrice(debug);
+        reminingMoney -= itemsMap.checkThePrice(debug);
         SharedPreferences.Editor editor = prefMoney.edit();
-        editor.putInt("money", money);
+        editor.putInt("ReminingMoney", reminingMoney);
         editor.apply();
 
         addSharedList(debug);
@@ -85,13 +88,12 @@ public class QRActivity extends AppCompatActivity {
             //QR読んだ時の処理
             @Override
             public void barcodeResult(final BarcodeResult result) {
-                TextView textView = (TextView)findViewById(R.id.qr_text);
-                textView.setText(result.getText());
-                if(itemsMap.checkThePrice(result.getText()) < 0){
+                readQR(result);
+                if(productMoney < 0){
                     Toast.makeText(getBaseContext(),"このQRコードは読めません",Toast.LENGTH_SHORT).show();
                     scanning();
                     return;
-                }else if(itemsMap.checkThePrice(result.getText()) - money > 0){
+                }else if(itemsMap.checkThePrice(result.getText()) - reminingMoney > 0){
                     Toast.makeText(getBaseContext(),"残高が足りません",Toast.LENGTH_SHORT).show();
                     scanning();
                     return;
@@ -104,9 +106,9 @@ public class QRActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 addSharedList(result.getText());
-                                money -= itemsMap.checkThePrice(result.getText());
+                                reminingMoney -= productMoney;
                                 SharedPreferences.Editor editorMoney = prefMoney.edit();
-                                editorMoney.putInt("money", money);
+                                editorMoney.putInt("ReminingMoney", reminingMoney);
                                 editorMoney.apply();
                                 Intent intent = new Intent(QRActivity.this,com.example.gushimakota.qrwallet.FinishActivity.class);
                                 startActivity(intent);
@@ -130,6 +132,11 @@ public class QRActivity extends AppCompatActivity {
             @Override
             public void possibleResultPoints(List<ResultPoint> resultPoints) {}
         });
+    }
+
+    private void readQR(BarcodeResult result){
+        String qrText = result.getText();
+        productMoney = itemsMap.checkThePrice(qrText);
     }
 
     private void addSharedList(String result){

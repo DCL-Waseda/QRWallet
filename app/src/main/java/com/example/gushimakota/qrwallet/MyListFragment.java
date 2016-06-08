@@ -81,7 +81,7 @@ public class MyListFragment extends Fragment {
         returnSelect = (Button)v.findViewById(R.id.return_select_fragment);
         historyList = (ListView)v.findViewById(R.id.history_list);
         openJson();
-        setListView();
+        setListView(v);
         returnSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,9 +97,9 @@ public class MyListFragment extends Fragment {
         strings = gson.fromJson(jsonString, ArrayList.class);
     }
 
-    private void setListView(){
+    private void setListView(View v){
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_expandable_list_item_1, strings);
-
+        historyList.setEmptyView(v.findViewById(R.id.emptyView));
         historyList.setAdapter(adapter);
     }
 

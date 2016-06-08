@@ -16,7 +16,7 @@ public class StartActivity extends AppCompatActivity implements SelectTheActionF
     private FragmentTransaction transaction;
     private SharedPreferences prefMoney;
     private SharedPreferences prefList;
-    private int money;
+    private int reminingMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +39,15 @@ public class StartActivity extends AppCompatActivity implements SelectTheActionF
         SharedPreferences.Editor editorList = prefList.edit();
         if (initMoney==false){
             editorMoney.putBoolean("initMoney", true);
-            editorMoney.putInt("money",10000);
+            editorMoney.putInt("ReminingMoney",10000);
             editorMoney.apply();
         }
-        money = prefMoney.getInt("money",-100);
+        reminingMoney = prefMoney.getInt("ReminingMoney",-100);
+
     }
 
     private void setReminingFragment(){
-        reminingFragment= ReminingFragment.newInstance(String.valueOf(money),"a");
+        reminingFragment= ReminingFragment.newInstance(String.valueOf(reminingMoney),"a");
         transaction.replace(R.id.linear_main,reminingFragment);
     }
 
