@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -41,6 +40,8 @@ public class MyListFragment extends Fragment {
     private ListView historyList;
     private SharedPreferences prefList;
     private List<String> strings;
+    private ItemsMap itemsMap;
+    List<ItemDataForMyList> list;
 
     public MyListFragment() {
         // Required empty public constructor
@@ -80,6 +81,7 @@ public class MyListFragment extends Fragment {
         View v =inflater.inflate(R.layout.fragment_my_list, container, false);
         returnSelect = (Button)v.findViewById(R.id.return_select_fragment);
         historyList = (ListView)v.findViewById(R.id.history_list);
+        itemsMap = new ItemsMap();
         openJson();
         setListView(v);
         returnSelect.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +100,17 @@ public class MyListFragment extends Fragment {
     }
 
     private void setListView(View v){
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_expandable_list_item_1, strings);
+        list = new ArrayList<ItemDataForMyList>();
+        int i=0;
+        for(String item : strings){
+            ItemDataForMyList itemDataForMyList = new ItemDataForMyList();
+            itemDataForMyList.setItemName(item);
+            itemDataForMyList.setItemPrice(itemsMap.checkThePrice(item));
+            list.add(i, itemDataForMyList);
+            i++;
+        }
+        MyListAdapter adapter = new MyListAdapter(getContext(),0,list);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_expandable_list_item_1, strings);
         historyList.setEmptyView(v.findViewById(R.id.emptyView));
         historyList.setAdapter(adapter);
     }
