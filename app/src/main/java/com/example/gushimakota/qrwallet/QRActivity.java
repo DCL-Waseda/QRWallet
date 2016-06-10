@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class QRActivity extends AppCompatActivity {
+public class QRActivity extends AppCompatActivity implements BtConnectionStatus{
 
     private SquareQR mBarcodeView;
     private FragmentManager manager;
@@ -33,6 +33,8 @@ public class QRActivity extends AppCompatActivity {
     private int productMoney;
     private ItemsMap itemsMap;
 
+    private BluetoothService mBtService = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +42,8 @@ public class QRActivity extends AppCompatActivity {
         itemsMap = new ItemsMap();
         mBarcodeView = (SquareQR) findViewById(R.id.barcode_scanner);
         manager = getSupportFragmentManager();
+//        mBtService = new BluetoothService(this);
+//        mBtService .setup();
         setReminingFragment();
         scanning();
     }
@@ -80,6 +84,12 @@ public class QRActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         mBarcodeView.pause();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+//        mBtService.stop();
     }
 
     private void scanning(){
@@ -160,5 +170,30 @@ public class QRActivity extends AppCompatActivity {
         // 保存
         editorList.putString("List", stringJson);
         editorList.commit();
+    }
+
+    @Override
+    public void onBtConnected() {
+
+    }
+
+    @Override
+    public void onBtConnecting() {
+
+    }
+
+    @Override
+    public void onBtConnectionFailed() {
+        Toast.makeText(this,"Bluetooth connection failed",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBtDeviceNotFound() {
+        Toast.makeText(this,"Bluetooth device not found",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBtNotAvailable() {
+        Toast.makeText(this,"Bluetooth not available",Toast.LENGTH_SHORT).show();
     }
 }
