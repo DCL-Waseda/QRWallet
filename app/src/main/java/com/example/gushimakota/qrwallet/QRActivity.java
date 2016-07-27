@@ -1,14 +1,20 @@
 package com.example.gushimakota.qrwallet;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,12 +24,20 @@ import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.UUID;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-public class QRActivity extends AppCompatActivity implements BtConnectionStatus{
+public class QRActivity extends AppCompatActivity /*implements BtConnectionStatus*/{
 
     private SquareQR mBarcodeView;
     private FragmentManager manager;
@@ -33,7 +47,38 @@ public class QRActivity extends AppCompatActivity implements BtConnectionStatus{
     private int productMoney;
     private ItemsMap itemsMap;
 
-    private BluetoothService mBtService = null;
+
+    /* Bluetooth Adapter */
+    private BluetoothAdapter mAdapter;
+    /* Bluetoothデバイス */
+    private BluetoothDevice mDevice;
+    /* Bluetooth UUID */
+    private final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    /* デバイス名 */
+    private final String DEVICE_NAME = "RNBT-B187";
+    /* Soket */
+    private BluetoothSocket mSocket;
+    /* Thread */
+    private Thread mThread;
+    /* Threadの状態を表す */
+    private boolean isRunning;
+    /** ステータス. */
+    private TextView mStatusTextView;
+    /** Bluetoothから受信した値. */
+    private TextView mInputTextView;
+    /** Action(ステータス表示). */
+    private static final int VIEW_STATUS = 0;
+    /** Action(取得文字列). */
+    private static final int VIEW_INPUT = 1;
+    /** Connect確認用フラグ */
+    private boolean connectFlg = false;
+    /** BluetoothのOutputStream. */
+    OutputStream mmOutputStream = null;
+    /* tag */
+    private static final String TAG = "BluetoothSample";
+
+//    private BluetoothService mBtService = null;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +87,40 @@ public class QRActivity extends AppCompatActivity implements BtConnectionStatus{
         itemsMap = new ItemsMap();
         mBarcodeView = (SquareQR) findViewById(R.id.barcode_scanner);
         manager = getSupportFragmentManager();
-//        mBtService = new BluetoothService(this);
-//        mBtService .setup();
+        setBluetoothAdapter();
         setReminingFragment();
         scanning();
+    }
+
+    private void setBluetoothAdapter(){
+        mAdapter = BluetoothAdapter.getDefaultAdapter();
+        Set< BluetoothDevice > devices = mAdapter.getBondedDevices();
+        for ( BluetoothDevice device : devices){
+            if(device.getName().equals(DEVICE_NAME)){
+                mDevice = device;
+                Log.d(device.getName(),device.getAddress());
+            }
+        }
+
+    }
+
+    private void sendMsg(){
+
+        try {
+            mSocket = mDevice.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+            mSocket.connect();
+            mmOutputStream = mSocket.getOutputStream();
+            String message = "0";
+            byte[] msgBuffer = message.getBytes();
+            try {
+                mmOutputStream.write(msgBuffer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void setReminingFragment(){
@@ -68,6 +143,9 @@ public class QRActivity extends AppCompatActivity implements BtConnectionStatus{
         editor.putInt("ReminingMoney", reminingMoney);
         editor.apply();
 
+//        mBtService.write("LED ON".getBytes());
+//        sendBt();
+       sendMsg();
         addSharedList(debug);
         Intent intent = new Intent(QRActivity.this,com.example.gushimakota.qrwallet.FinishActivity.class);
         startActivity(intent);
@@ -84,7 +162,15 @@ public class QRActivity extends AppCompatActivity implements BtConnectionStatus{
     public void onPause() {
         super.onPause();
         mBarcodeView.pause();
+
+        isRunning = false;
+        try{
+            mSocket.close();
+        }
+        catch(Exception e){}
     }
+
+
 
     @Override
     public void onDestroy(){
@@ -117,6 +203,7 @@ public class QRActivity extends AppCompatActivity implements BtConnectionStatus{
                             public void onClick(DialogInterface dialog, int which) {
                                 addSharedList(result.getText());
                                 reminingMoney -= productMoney;
+//                                sendBt();
                                 SharedPreferences.Editor editorMoney = prefMoney.edit();
                                 editorMoney.putInt("ReminingMoney", reminingMoney);
                                 editorMoney.apply();
@@ -143,6 +230,23 @@ public class QRActivity extends AppCompatActivity implements BtConnectionStatus{
             public void possibleResultPoints(List<ResultPoint> resultPoints) {}
         });
     }
+
+//    private void sendBt(){
+//        handler = new Handler();
+//        Thread t = new Thread(){
+//            @Override
+//            public void run(){
+//                handler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+////                        mBtService.write("LEDON".getBytes());
+////                        mBtService.shutDown();
+//                    }
+//                });
+//            }
+//        };
+//        t.start();
+//    }
 
     private void readQR(BarcodeResult result){
         String qrText = result.getText();
@@ -172,28 +276,29 @@ public class QRActivity extends AppCompatActivity implements BtConnectionStatus{
         editorList.commit();
     }
 
-    @Override
-    public void onBtConnected() {
 
-    }
-
-    @Override
-    public void onBtConnecting() {
-
-    }
-
-    @Override
-    public void onBtConnectionFailed() {
-        Toast.makeText(this,"Bluetooth connection failed",Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onBtDeviceNotFound() {
-        Toast.makeText(this,"Bluetooth device not found",Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onBtNotAvailable() {
-        Toast.makeText(this,"Bluetooth not available",Toast.LENGTH_SHORT).show();
-    }
+//    @Override
+//    public void onBtConnected() {
+//
+//    }
+//
+//    @Override
+//    public void onBtConnecting() {
+//
+//    }
+//
+//    @Override
+//    public void onBtConnectionFailed() {
+//        Toast.makeText(this,"Bluetooth connection failed",Toast.LENGTH_SHORT).show();
+//    }
+//
+//    @Override
+//    public void onBtDeviceNotFound() {
+//        Toast.makeText(this,"Bluetooth device not found",Toast.LENGTH_SHORT).show();
+//    }
+//
+//    @Override
+//    public void onBtNotAvailable() {
+//        Toast.makeText(this,"Bluetooth not available",Toast.LENGTH_SHORT).show();
+//    }
 }

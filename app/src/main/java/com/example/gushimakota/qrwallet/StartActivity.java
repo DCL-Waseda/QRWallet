@@ -43,7 +43,6 @@ public class StartActivity extends AppCompatActivity implements SelectTheActionF
             editorMoney.apply();
         }
         reminingMoney = prefMoney.getInt("ReminingMoney",-100);
-
     }
 
     private void setReminingFragment(){

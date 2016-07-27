@@ -39,7 +39,7 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Button"
+                android:text="デバッグボタン"
                 android:id="@+id/button"
                 android:layout_gravity="center_horizontal"
                 android:onClick="debugBtn" />
