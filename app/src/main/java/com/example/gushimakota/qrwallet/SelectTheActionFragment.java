@@ -28,7 +28,6 @@ public class SelectTheActionFragment extends Fragment {
     private Button mBuyingButton;
     private Button mListButton;
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -46,7 +45,6 @@ public class SelectTheActionFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment SelectTheActionFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static SelectTheActionFragment newInstance(String param1, String param2) {
         SelectTheActionFragment fragment = new SelectTheActionFragment();
         Bundle args = new Bundle();
@@ -127,7 +125,6 @@ public class SelectTheActionFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSelectTheActionFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onChangeTheFragmentToList();
     }
 }

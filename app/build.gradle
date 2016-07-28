@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
+apply plugin: 'deploygate'
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "com.example.gushimakota.qrwallet"
+        applicationId "jp.dcl.project.qrwallet"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
