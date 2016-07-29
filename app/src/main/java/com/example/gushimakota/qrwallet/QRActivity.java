@@ -8,15 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -149,7 +146,7 @@ public class QRActivity extends AppCompatActivity{
             @Override
             public void run(){
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(500);
                     try {
                         mSocket.close();
                     } catch (IOException e) {
@@ -178,8 +175,6 @@ public class QRActivity extends AppCompatActivity{
         }
         catch(Exception e){}
     }
-
-
 
     @Override
     public void onDestroy(){
@@ -212,13 +207,14 @@ public class QRActivity extends AppCompatActivity{
                             public void onClick(DialogInterface dialog, int which) {
                                 addSharedList(result.getText());
                                 reminingMoney -= productMoney;
-//                                sendBt();
                                 SharedPreferences.Editor editorMoney = prefMoney.edit();
                                 editorMoney.putInt("ReminingMoney", reminingMoney);
                                 editorMoney.apply();
+                                sendMsg();
                                 Intent intent = new Intent(QRActivity.this,com.example.gushimakota.qrwallet.FinishActivity.class);
                                 startActivity(intent);
                                 finish();
+                                socketClose();
                             }
                         });
                 alertDlg.setNegativeButton(
@@ -227,7 +223,6 @@ public class QRActivity extends AppCompatActivity{
                             public void onClick(DialogInterface dialog, int which) {
                                 // Cancel ボタンクリック処理
                                 scanning();
-                                return;
                             }
                         });
 
@@ -260,11 +255,11 @@ public class QRActivity extends AppCompatActivity{
         }else{
             editorList.putBoolean("InitList",true);
         }
-        strings.add(result);
+        strings.add(0,result);
         // JSONに再変換
         String stringJson = gson.toJson(strings);
         // 保存
         editorList.putString("List", stringJson);
-        editorList.commit();
+        editorList.apply();
     }
 }

@@ -13,8 +13,8 @@ public class ItemsMap {
 
     public ItemsMap(){
         map = new HashMap<String, Integer>();
-        map.put("DebugTest", 100);
-        map.put("DebugTest2", 200);
+        map.put("おかし", 200);
+        map.put("コーヒー", 100);
     }
 
     public Map<String,Integer> getMap(){
