@@ -17,14 +17,14 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="こーにゅー"
+            android:text="購入画面"
             android:id="@+id/buy_button"
             android:layout_gravity="center" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="りすと"
+            android:text="履歴"
             android:id="@+id/list_button"
             android:layout_gravity="center" />
     </LinearLayout>

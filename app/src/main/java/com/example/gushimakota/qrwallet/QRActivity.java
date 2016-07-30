@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.BarcodeView;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,7 +31,8 @@ import java.util.UUID;
 
 public class QRActivity extends AppCompatActivity{
 
-    private SquareQR mBarcodeView;
+//    private SquareQR mBarcodeView;
+    private BarcodeView mBarcodeView;
     private SharedPreferences prefMoney;
     private SharedPreferences prefList;
     private int reminingMoney;
@@ -58,7 +60,7 @@ public class QRActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr);
         itemsMap = new ItemsMap();
-        mBarcodeView = (SquareQR) findViewById(R.id.barcode_scanner);
+        mBarcodeView = (BarcodeView) findViewById(R.id.barcode_scanner);
         setBluetoothAdapter();
         setReminingFragment();
         scanning();
@@ -81,21 +83,6 @@ public class QRActivity extends AppCompatActivity{
                 }
                 return;
             }
-        }
-    }
-
-    public void debug2(View v){
-        try {
-            mmOutputStream = mSocket.getOutputStream();
-            char message = 'o';
-            try {
-                mmOutputStream.write(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            Log.e("Bluetooth socket err", "connect failed!!");
-            e.printStackTrace();
         }
     }
 
@@ -124,22 +111,39 @@ public class QRActivity extends AppCompatActivity{
         transaction.commit();
     }
 
-    public void debugBtn(View v){
-        String debug = "DebugTest";
-        if(itemsMap.checkThePrice(debug) < 0 || itemsMap.checkThePrice(debug) - reminingMoney > 0){
-            return;
-        }
-        reminingMoney -= itemsMap.checkThePrice(debug);
-        SharedPreferences.Editor editor = prefMoney.edit();
-        editor.putInt("ReminingMoney", reminingMoney);
-        editor.apply();
-        sendMsg();
-        addSharedList(debug);
-        Intent intent = new Intent(QRActivity.this,com.example.gushimakota.qrwallet.FinishActivity.class);
-        startActivity(intent);
-        finish();
-        socketClose();
-    }
+//    public void debugBtn(View v){
+//        String debug = "DebugTest";
+//        if(itemsMap.checkThePrice(debug) < 0 || itemsMap.checkThePrice(debug) - reminingMoney > 0){
+//            return;
+//        }
+//        reminingMoney -= itemsMap.checkThePrice(debug);
+//        SharedPreferences.Editor editor = prefMoney.edit();
+//        editor.putInt("ReminingMoney", reminingMoney);
+//        editor.apply();
+//        sendMsg();
+//        addSharedList(debug);
+//        Intent intent = new Intent(QRActivity.this,com.example.gushimakota.qrwallet.FinishActivity.class);
+//        startActivity(intent);
+//        finish();
+//        socketClose();
+//    }
+//
+//
+//    public void debug2(View v){
+//        try {
+//            mmOutputStream = mSocket.getOutputStream();
+//            char message = 'o';
+//            try {
+//                mmOutputStream.write(message);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        } catch (IOException e) {
+//            Log.e("Bluetooth socket err", "connect failed!!");
+//            e.printStackTrace();
+//        }
+//    }
+
 
     public void socketClose() {
         Thread t = new Thread(){
