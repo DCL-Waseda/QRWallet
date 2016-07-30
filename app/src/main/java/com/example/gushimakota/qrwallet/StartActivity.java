@@ -36,7 +36,6 @@ public class StartActivity extends AppCompatActivity implements SelectTheActionF
 
         boolean initMoney = prefMoney.getBoolean("initMoney", false);
         SharedPreferences.Editor editorMoney = prefMoney.edit();
-        SharedPreferences.Editor editorList = prefList.edit();
         if (initMoney==false){
             editorMoney.putBoolean("initMoney", true);
             editorMoney.putInt("ReminingMoney",10000);
@@ -51,7 +50,7 @@ public class StartActivity extends AppCompatActivity implements SelectTheActionF
     }
 
     private void setSelectFragment(){
-        selectTheActionFragment = SelectTheActionFragment.newInstance("a","a");
+        selectTheActionFragment = SelectTheActionFragment.newInstance();
         transaction.add(R.id.linear_main,selectTheActionFragment);
     }
 

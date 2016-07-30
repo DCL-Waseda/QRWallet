@@ -21,7 +21,7 @@ public class SelectTheActionFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SelectTheActionFragment newInstance(String param1, String param2) {
+    public static SelectTheActionFragment newInstance() {
         SelectTheActionFragment fragment = new SelectTheActionFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
